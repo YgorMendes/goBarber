@@ -8,10 +8,10 @@ export const Container = styled.div`
   align-items: stretch;
 `;
 
-const leftAnimate = keyframes`
+const rigthAnimate = keyframes`
   from {
     opacity: 0;
-    transform: translateX(-50px);
+    transform: translateX(50px);
   }
 
   to {
@@ -29,7 +29,7 @@ export const Content = styled.div`
   width: 100%;
   max-width: 700px;
 
-  animation: ${leftAnimate} 1s;
+  animation: ${rigthAnimate} 1s;
 
   form {
     width: 340px;

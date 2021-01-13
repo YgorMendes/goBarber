@@ -79,6 +79,7 @@ function SignIn(): JSX.Element {
             register
           </Link>
         </Content>
+
         <Background />
       </Container>
       <GlobalStyle />
