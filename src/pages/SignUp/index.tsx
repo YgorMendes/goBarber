@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+
 import { FiArrowLeft } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -67,12 +69,11 @@ function SignUp(): JSX.Element {
             {errors.password && <p>{errors.password.message}</p>}
 
             <Button type="submit">register</Button>
-            <a href="login">return to login</a>
           </form>
-          <a href="login">
+          <Link to="login">
             <FiArrowLeft />
             retun to login
-          </a>
+          </Link>
         </Content>
       </Container>
       <GlobalStyle />

@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+
 import { FiLogIn } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -72,10 +74,10 @@ function SignIn(): JSX.Element {
             <Button type="submit">login</Button>
             <a href="forgot">you have forgotten the password?</a>
           </form>
-          <a href="register">
+          <Link to="register">
             <FiLogIn />
             register
-          </a>
+          </Link>
         </Content>
         <Background />
       </Container>
