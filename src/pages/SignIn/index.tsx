@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Redirect, Route, Switch } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { FiLogIn } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
@@ -22,7 +22,8 @@ interface UserData {
 }
 
 function SignIn(): JSX.Element {
-  const { signIn, isLogued } = useAuth();
+  const { signIn } = useAuth();
+  const history = useHistory();
   const { addPopUp } = usePopUp();
 
   const { handleSubmit, register, errors } = useForm<UserData>({
@@ -30,36 +31,22 @@ function SignIn(): JSX.Element {
   });
 
   const onSubmit = React.useCallback(
-    (values: UserData) => {
-      console.log('values', values);
-
-      console.log(values.email, values.password);
-
+    async (values: UserData) => {
       try {
-        signIn({ email: values.email, password: values.password });
-        addPopUp({ icon: 'Succes', title: 'Has Login' });
+        await signIn({ email: values.email, password: values.password });
+        addPopUp({ icon: 'Succes', title: 'Succes', description: 'Has Login' });
+        history.push('/');
       } catch (err) {
-        if (err) {
-          console.log(err);
-        }
-        addPopUp({ icon: 'Error', title: 'Login Error' });
+        console.log(err);
+        addPopUp({
+          icon: 'Error',
+          title: `Error`,
+          description: 'not logged in',
+        });
       }
     },
-    [signIn],
+    [signIn, history, addPopUp],
   );
-
-  if (isLogued) {
-    console.log(isLogued);
-    return (
-      <Switch>
-        <Route
-          render={() => {
-            return <Redirect to="/" />;
-          }}
-        />
-      </Switch>
-    );
-  }
 
   return (
     <>

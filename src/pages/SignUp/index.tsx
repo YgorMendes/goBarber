@@ -1,9 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { FiArrowLeft } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { usePopUp } from '../../hooks/popUp';
+import api from '../../services/api';
 
 import schema from './schema';
 
@@ -24,9 +26,21 @@ function SignUp(): JSX.Element {
   const { register, errors, handleSubmit } = useForm<UserData>({
     resolver: yupResolver(schema),
   });
+  const { addPopUp } = usePopUp();
+  const history = useHistory();
 
-  const onSubmit = (values: UserData) => {
-    console.log('values', values);
+  const onSubmit = async (values: UserData) => {
+    try {
+      await api.post('/users', values);
+      addPopUp({ icon: 'Succes', title: 'Sucess', description: 'registered' });
+      history.push('/login');
+    } catch (err) {
+      addPopUp({
+        icon: 'Error',
+        title: 'Error',
+        description: 'not registered',
+      });
+    }
   };
 
   return (
