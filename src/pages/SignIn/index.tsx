@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect, Route, Switch } from 'react-router-dom';
 
 import { FiLogIn } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
@@ -22,7 +22,7 @@ interface UserData {
 }
 
 function SignIn(): JSX.Element {
-  const { signIn } = useAuth();
+  const { signIn, isLogued } = useAuth();
   const { addPopUp } = usePopUp();
 
   const { handleSubmit, register, errors } = useForm<UserData>({
@@ -47,6 +47,19 @@ function SignIn(): JSX.Element {
     },
     [signIn],
   );
+
+  if (isLogued) {
+    console.log(isLogued);
+    return (
+      <Switch>
+        <Route
+          render={() => {
+            return <Redirect to="/" />;
+          }}
+        />
+      </Switch>
+    );
+  }
 
   return (
     <>

@@ -10,6 +10,7 @@ interface AuthContextData {
   user: any;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
+  isLogued: boolean;
 }
 
 interface AuthContextProps {
@@ -24,13 +25,17 @@ interface AusthState {
 const AuthContext = React.createContext<AuthContextData>({} as AuthContextData);
 
 function AuthProvider({ children }: AuthContextProps): JSX.Element {
+  const [isLogued, setIsLogued] = React.useState(false);
+
   const [data, setData] = React.useState<AusthState>(() => {
     const token = localStorage.getItem('@goBarber:token');
     const user = localStorage.getItem('@goBarber:user');
 
     if (token && user) {
+      setIsLogued(true);
       return { token, user: JSON.parse(user) };
     }
+    setIsLogued(false);
 
     return {} as AusthState;
   });
@@ -57,7 +62,9 @@ function AuthProvider({ children }: AuthContextProps): JSX.Element {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ user: data.user, signIn, signOut, isLogued }}
+    >
       {children}
     </AuthContext.Provider>
   );
