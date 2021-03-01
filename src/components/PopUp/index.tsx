@@ -1,14 +1,14 @@
 import React from 'react';
 import { Container, PopUp } from './styles';
 import Icon from '../Icon';
-import { PopUpMessage, usePopUp } from '../../hooks/popUp';
+import { PopUpMessage, usePopUp as UsePopUp } from '../../hooks/popUp';
 
 interface PropsPopUp {
   messages: PopUpMessage[];
 }
 
 function index({ messages }: PropsPopUp): JSX.Element {
-  const { removePopUp } = usePopUp();
+  const { removePopUp } = UsePopUp();
 
   return (
     <Container>
