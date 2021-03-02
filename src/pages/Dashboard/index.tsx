@@ -1,5 +1,7 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { FiClock, FiPower } from 'react-icons/fi';
+import DayPicker, { DayModifiers } from 'react-day-picker';
 import { useAuth } from '../../hooks/auth';
 import {
   Container,
@@ -13,15 +15,65 @@ import {
   Appointment,
 } from './styles';
 import Logo from '../../assets/icons/logo.svg';
+import 'react-day-picker/lib/style.css';
+import api from '../../services/api';
+
+interface MonthAvailabilityItem {
+  day: number;
+  available: boolean;
+}
 
 function Home(): JSX.Element {
   const { signOut, user } = useAuth();
+  const history = useHistory();
   const [selectDate, setSelectDate] = React.useState(new Date());
+  const [currentMonth, setCurrentMonth] = React.useState(new Date());
+  const [monthAvailability, setMonthAvailability] = React.useState<
+    MonthAvailabilityItem[]
+  >([]);
 
   const handleClick = React.useCallback(() => {
     signOut();
-  }, [signOut]);
+    history.push('/login');
+  }, [signOut, history]);
 
+  const handleDateChange = React.useCallback(
+    (day: Date, modifiers: DayModifiers) => {
+      if (modifiers.available) {
+        setSelectDate(day);
+      }
+    },
+    [],
+  );
+
+  const handleMonthChange = React.useCallback((month: Date) => {
+    setCurrentMonth(month);
+  }, []);
+
+  React.useEffect(() => {
+    api
+      .get(`providers/${user.id}/month-availability`, {
+        params: {
+          year: currentMonth.getFullYear(),
+          month: currentMonth.getMonth() + 1,
+        },
+      })
+      .then((response) => {
+        setMonthAvailability(response.data);
+      });
+  }, [currentMonth, user.id]);
+
+  const disableDays = React.useMemo(() => {
+    const dates = monthAvailability
+      .filter((monthDay) => monthDay.available === false)
+      .map((monthDay) => {
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.getMonth();
+
+        return new Date(year, month, monthDay.day);
+      });
+    return dates;
+  }, [currentMonth, monthAvailability]);
   return (
     <Container>
       <Header>
@@ -38,7 +90,7 @@ function Home(): JSX.Element {
           </div>
         </Profile>
 
-        <button type="button" onClick={handleClick}>
+        <button type="button" onClick={() => handleClick}>
           <FiPower />
         </button>
       </Header>
@@ -66,6 +118,7 @@ function Home(): JSX.Element {
               </span>
             </div>
           </NextAppointment>
+
           <Section>
             <strong>morning</strong>
             <Appointment>
@@ -81,6 +134,7 @@ function Home(): JSX.Element {
                 <strong>Barber woman</strong>
               </div>
             </Appointment>
+
             <Appointment>
               <span>
                 <FiClock />
@@ -112,7 +166,19 @@ function Home(): JSX.Element {
             </Appointment>
           </Section>
         </Schedule>
-        <Calendar />
+
+        <Calendar>
+          <DayPicker
+            fromMonth={new Date()}
+            disabledDays={[{ daysOfWeek: [0, 6], ...disableDays }]}
+            modifiers={{
+              available: { daysOfWeek: [1, 2, 3, 4, 5] },
+            }}
+            onDayClick={handleDateChange}
+            selectedDays={selectDate}
+            onMonthChange={handleMonthChange}
+          />
+        </Calendar>
       </Content>
     </Container>
   );
