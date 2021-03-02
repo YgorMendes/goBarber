@@ -6,8 +6,14 @@ interface SignInCredentials {
   password: string;
 }
 
+interface User {
+  id: string;
+  name: string;
+  avatar_url: string;
+}
+
 interface AuthContextData {
-  user: any;
+  user: User;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
 }
@@ -18,7 +24,7 @@ interface AuthContextProps {
 
 interface AusthState {
   token: string;
-  user: any;
+  user: User;
 }
 
 const AuthContext = React.createContext<AuthContextData>({} as AuthContextData);
