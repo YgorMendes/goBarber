@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { FiClock, FiPower } from 'react-icons/fi';
 import DayPicker, { DayModifiers } from 'react-day-picker';
 import { ptBR } from 'date-fns/esm/locale';
+import { parseISO } from 'date-fns/esm';
 import { useAuth } from '../../hooks/auth';
 import {
   Container,
@@ -28,6 +29,7 @@ interface MonthAvailabilityItem {
 interface Appoitment {
   id: string;
   date: string;
+  hourFormatted: string;
   user: {
     name: string;
     avatar_url: string;
@@ -77,7 +79,7 @@ function Home(): JSX.Element {
 
   React.useEffect(() => {
     api
-      .get('/appointments/me', {
+      .get<Appoitment[]>('/appointments/me', {
         params: {
           year: selectDate.getFullYear(),
           month: selectDate.getMonth() + 1,
@@ -85,7 +87,14 @@ function Home(): JSX.Element {
         },
       })
       .then((response) => {
-        setAppointments(response.data);
+        const appointmentsFormatted = response.data.map((appointment) => {
+          return {
+            ...appointment,
+            hourFormatted: format(parseISO(appointment.date), 'HH:mm'),
+          };
+        });
+        setAppointments(appointmentsFormatted);
+
         console.log(response.data);
       });
   }, [selectDate]);
@@ -113,6 +122,18 @@ function Home(): JSX.Element {
       locale: ptBR,
     });
   }, [selectDate]);
+
+  const morningAppointments = React.useMemo(() => {
+    return appointments.filter((appointment) => {
+      return parseISO(appointment.date).getHours() < 12;
+    });
+  }, [appointments]);
+
+  const afternoonAppointments = React.useMemo(() => {
+    return appointments.filter((appointment) => {
+      return parseISO(appointment.date).getHours() >= 12;
+    });
+  }, [appointments]);
 
   return (
     <Container>
@@ -161,49 +182,43 @@ function Home(): JSX.Element {
 
           <Section>
             <strong>morning</strong>
-            <Appointment>
-              <span>
-                <FiClock />
-                13:00
-              </span>
-              <div>
-                <img
-                  src="https://s3.envato.com/files/297753474/IMG_7074.jpg"
-                  alt="barber woman"
-                />
-                <strong>Barber woman</strong>
-              </div>
-            </Appointment>
-
-            <Appointment>
-              <span>
-                <FiClock />
-                13:00
-              </span>
-              <div>
-                <img
-                  src="https://s3.envato.com/files/297753474/IMG_7074.jpg"
-                  alt="barber woman"
-                />
-                <strong>Barber woman</strong>
-              </div>
-            </Appointment>
+            {morningAppointments.map((appointment) => {
+              return (
+                <Appointment key={appointment.id}>
+                  <span>
+                    <FiClock />
+                    {appointment.hourFormatted}
+                  </span>
+                  <div>
+                    <img
+                      src={appointment.user.avatar_url}
+                      alt={appointment.user.name}
+                    />
+                    <strong>{appointment.user.name}</strong>
+                  </div>
+                </Appointment>
+              );
+            })}
           </Section>
           <Section>
             <strong>afternoon</strong>
-            <Appointment>
-              <span>
-                <FiClock />
-                13:00
-              </span>
-              <div>
-                <img
-                  src="https://s3.envato.com/files/297753474/IMG_7074.jpg"
-                  alt="barber woman"
-                />
-                <strong>Barber woman</strong>
-              </div>
-            </Appointment>
+            {afternoonAppointments.map((appointment) => {
+              return (
+                <Appointment key={appointment.id}>
+                  <span>
+                    <FiClock />
+                    {appointment.hourFormatted}
+                  </span>
+                  <div>
+                    <img
+                      src={appointment.user.avatar_url}
+                      alt={appointment.user.name}
+                    />
+                    <strong>{appointment.user.name}</strong>
+                  </div>
+                </Appointment>
+              );
+            })}
           </Section>
         </Schedule>
 
