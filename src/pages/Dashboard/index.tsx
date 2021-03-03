@@ -1,7 +1,9 @@
+import { format, isToday } from 'date-fns';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { FiClock, FiPower } from 'react-icons/fi';
 import DayPicker, { DayModifiers } from 'react-day-picker';
+import { ptBR } from 'date-fns/esm/locale';
 import { useAuth } from '../../hooks/auth';
 import {
   Container,
@@ -23,6 +25,15 @@ interface MonthAvailabilityItem {
   available: boolean;
 }
 
+interface Appoitment {
+  id: string;
+  date: string;
+  user: {
+    name: string;
+    avatar_url: string;
+  };
+}
+
 function Home(): JSX.Element {
   const { signOut, user } = useAuth();
   const history = useHistory();
@@ -31,6 +42,7 @@ function Home(): JSX.Element {
   const [monthAvailability, setMonthAvailability] = React.useState<
     MonthAvailabilityItem[]
   >([]);
+  const [appointments, setAppointments] = React.useState<Appoitment[]>([]);
 
   const handleClick = React.useCallback(() => {
     signOut();
@@ -63,6 +75,21 @@ function Home(): JSX.Element {
       });
   }, [currentMonth, user.id]);
 
+  React.useEffect(() => {
+    api
+      .get('/appointments/me', {
+        params: {
+          year: selectDate.getFullYear(),
+          month: selectDate.getMonth() + 1,
+          day: selectDate.getDate(),
+        },
+      })
+      .then((response) => {
+        setAppointments(response.data);
+        console.log(response.data);
+      });
+  }, [selectDate]);
+
   const disableDays = React.useMemo(() => {
     const dates = monthAvailability
       .filter((monthDay) => monthDay.available === false)
@@ -74,6 +101,19 @@ function Home(): JSX.Element {
       });
     return dates;
   }, [currentMonth, monthAvailability]);
+
+  const selectedDateAsText = React.useMemo(() => {
+    return format(selectDate, "'day' dd 'the' MMM", {
+      locale: ptBR,
+    });
+  }, [selectDate]);
+
+  const selectedWeeDay = React.useMemo(() => {
+    return format(selectDate, 'cccc', {
+      locale: ptBR,
+    });
+  }, [selectDate]);
+
   return (
     <Container>
       <Header>
@@ -90,7 +130,7 @@ function Home(): JSX.Element {
           </div>
         </Profile>
 
-        <button type="button" onClick={() => handleClick}>
+        <button type="button" onClick={() => handleClick()}>
           <FiPower />
         </button>
       </Header>
@@ -99,9 +139,9 @@ function Home(): JSX.Element {
         <Schedule>
           <h1>appointments hours</h1>
           <p>
-            <span>today | </span>
-            <span>day 02 | </span>
-            <span>Monday</span>
+            <span>{isToday(selectDate) && 'today | '}</span>
+            <span>{selectedDateAsText} | </span>
+            <span>{selectedWeeDay}</span>
           </p>
 
           <NextAppointment>
