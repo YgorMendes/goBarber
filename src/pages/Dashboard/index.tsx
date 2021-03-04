@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { FiClock, FiPower } from 'react-icons/fi';
 import DayPicker, { DayModifiers } from 'react-day-picker';
 import { ptBR } from 'date-fns/esm/locale';
-import { parseISO } from 'date-fns/esm';
+import { isAfter, parseISO } from 'date-fns/esm';
 import { useAuth } from '../../hooks/auth';
 import {
   Container,
@@ -53,7 +53,7 @@ function Home(): JSX.Element {
 
   const handleDateChange = React.useCallback(
     (day: Date, modifiers: DayModifiers) => {
-      if (modifiers.available) {
+      if (modifiers.available && !modifiers.disabled) {
         setSelectDate(day);
       }
     },
@@ -135,6 +135,12 @@ function Home(): JSX.Element {
     });
   }, [appointments]);
 
+  const nextAppointment = React.useMemo(() => {
+    return appointments.find((appointment) =>
+      isAfter(parseISO(appointment.date), new Date()),
+    );
+  }, [appointments]);
+
   return (
     <Container>
       <Header>
@@ -165,23 +171,29 @@ function Home(): JSX.Element {
             <span>{selectedWeeDay}</span>
           </p>
 
-          <NextAppointment>
-            <strong>appointment to follow</strong>
-            <div>
-              <img
-                src="https://s3.envato.com/files/297753474/IMG_7074.jpg"
-                alt="barber woman"
-              />
-              <strong>Barber woman</strong>
-              <span>
-                <FiClock />
-                13:00
-              </span>
-            </div>
-          </NextAppointment>
+          {isToday(selectDate) && nextAppointment && (
+            <NextAppointment>
+              <strong>appointment to follow</strong>
+              <div>
+                <img
+                  src={nextAppointment.user.avatar_url}
+                  alt={nextAppointment.user.name}
+                />
+                <strong>{nextAppointment.user.name}</strong>
+                <span>
+                  <FiClock />
+                  {nextAppointment.hourFormatted}
+                </span>
+              </div>
+            </NextAppointment>
+          )}
 
           <Section>
             <strong>morning</strong>
+            {morningAppointments.length === 0 && (
+              <p>no appointment in this period</p>
+            )}
+
             {morningAppointments.map((appointment) => {
               return (
                 <Appointment key={appointment.id}>
@@ -202,6 +214,9 @@ function Home(): JSX.Element {
           </Section>
           <Section>
             <strong>afternoon</strong>
+            {afternoonAppointments.length === 0 && (
+              <p>no appointment in this period</p>
+            )}
             {afternoonAppointments.map((appointment) => {
               return (
                 <Appointment key={appointment.id}>
