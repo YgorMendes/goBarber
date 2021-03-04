@@ -1,6 +1,6 @@
 import { format, isToday } from 'date-fns';
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { FiClock, FiPower } from 'react-icons/fi';
 import DayPicker, { DayModifiers } from 'react-day-picker';
 import { ptBR } from 'date-fns/esm/locale';
@@ -153,7 +153,9 @@ function Home(): JSX.Element {
           />
           <div>
             <p>wellcome!</p>
-            <strong>{user.name}</strong>
+            <Link to="/profile">
+              <strong>{user.name}</strong>
+            </Link>
           </div>
         </Profile>
 

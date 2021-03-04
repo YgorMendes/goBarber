@@ -43,6 +43,10 @@ export const Profile = styled.div`
 
   div {
     margin-left: 12px;
+
+    a > {
+      text-decoration: none;
+    }
   }
 
   strong {
