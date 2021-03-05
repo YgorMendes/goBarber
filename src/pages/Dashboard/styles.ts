@@ -44,7 +44,7 @@ export const Profile = styled.div`
   div {
     margin-left: 12px;
 
-    a > {
+    a {
       text-decoration: none;
     }
   }

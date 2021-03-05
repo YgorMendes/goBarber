@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 
-import { FiArrowLeft } from 'react-icons/fi';
+import { FiArrowLeft, FiCamera } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { usePopUp } from '../../hooks/popUp';
@@ -25,7 +25,7 @@ interface UserData {
 }
 
 function Profile(): JSX.Element {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { register, errors, handleSubmit } = useForm<UserData>({
     resolver: yupResolver(schema),
   });
@@ -46,6 +46,20 @@ function Profile(): JSX.Element {
     }
   };
 
+  const handleAvatarChange = React.useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        const data = new FormData();
+
+        data.append('avatar', e.target.files[0]);
+        api.patch('users/avatar', data).then((response) => {
+          updateUser(response.data);
+        });
+      }
+    },
+    [updateUser],
+  );
+
   return (
     <>
       <Container>
@@ -56,16 +70,17 @@ function Profile(): JSX.Element {
         </header>
         <Content>
           <div>
-            <img
-              src="https://i.pinimg.com/originals/7d/bb/7e/7dbb7ee94962d8c9f523b776c5aff441.jpg"
-              alt="barber man"
-            />
+            <img src={user.avatar_url} alt="barber man" />
+            <label htmlFor="avatar">
+              <FiCamera />
+              <input type="file" id="avatar" onChange={handleAvatarChange} />
+            </label>
           </div>
           <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
             <h1>sign up</h1>
             <Input
               className={errors.name ? 'borderError' : ''}
-              value={user.name}
+              defaultValue={user.name}
               icon="User"
               name="name"
               type="text"
@@ -76,7 +91,7 @@ function Profile(): JSX.Element {
 
             <Input
               className={errors.email ? 'borderError' : ''}
-              value={user.email}
+              defaultValue={user.email}
               icon="Email"
               name="email"
               type="text"

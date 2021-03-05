@@ -1,5 +1,4 @@
-import styled, { keyframes } from 'styled-components';
-import SignInBackground from '../../assets/sign-in-background.png';
+import styled from 'styled-components';
 
 export const Container = styled.div`
   height: 100vh;
@@ -9,6 +8,42 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  div {
+    display: flex;
+    justify-content: center;
+    img {
+      margin-right: -48px;
+      margin-top: -60px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+    }
+
+    & > label {
+      cursor: pointer;
+      position: relative;
+      width: 48px;
+      height: 48px;
+      background-color: #ff9000;
+      border-radius: 50%;
+      right: -10px;
+      bottom: 0;
+      border: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      input {
+        display: none;
+      }
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
 
   header {
     width: 100%;
@@ -21,25 +56,6 @@ export const Container = styled.div`
       color: #928e8b;
     }
   }
-
-  div > img {
-    margin-top: -60px;
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-  }
-`;
-
-const leftAnimate = keyframes`
-  from {
-    opacity: 0;
-    transform: translateX(-50px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
 `;
 
 export const Content = styled.div`
@@ -50,8 +66,6 @@ export const Content = styled.div`
 
   width: 100%;
   max-width: 700px;
-
-  animation: ${leftAnimate} 1s;
 
   form {
     width: 340px;
@@ -68,44 +82,5 @@ export const Content = styled.div`
       margin-right: auto;
       margin-bottom: 24px;
     }
-
-    a {
-      text-decoration: none;
-      color: #f4ede8;
-      margin-top: 16px;
-      transition: color 0.2s;
-
-      &:hover {
-        color: #cdc2ba;
-      }
-    }
   }
-
-  p {
-    margin: 8px 0;
-    color: #ff5858;
-  }
-
-  a {
-    margin-top: 16px;
-    text-decoration: none;
-    color: #ff9000;
-    display: flex;
-    align-items: center;
-    transition: color 0.2s;
-
-    svg {
-      margin-right: 16px;
-    }
-
-    &:hover {
-      color: #cb790e;
-    }
-  }
-`;
-
-export const Background = styled.div`
-  flex: 1;
-  background: url(${SignInBackground}) no-repeat center;
-  background-size: cover;
 `;
