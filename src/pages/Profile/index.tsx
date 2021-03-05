@@ -26,17 +26,39 @@ interface UserData {
 
 function Profile(): JSX.Element {
   const { user, updateUser } = useAuth();
-  const { register, errors, handleSubmit } = useForm<UserData>({
+  const { handleSubmit, register, errors } = useForm<UserData>({
     resolver: yupResolver(schema),
   });
   const { addPopUp } = usePopUp();
   const history = useHistory();
 
-  const onSubmit = async (values: UserData) => {
+  const onSubmit = async (data: UserData) => {
     try {
-      await api.post('/users', values);
-      addPopUp({ icon: 'Succes', title: 'Sucess', description: 'registered' });
-      history.push('/login');
+      const {
+        name,
+        email,
+        old_password,
+        password,
+        confirmation_password,
+      } = data;
+
+      const formData = {
+        name,
+        email,
+        ...(old_password
+          ? {
+              old_password,
+              password,
+              confirmation_password,
+            }
+          : {}),
+      };
+      const response = await api.put('/profile', formData);
+
+      updateUser(response.data);
+
+      addPopUp({ icon: 'Succes', title: 'Sucess', description: 'change ok' });
+      history.push('/');
     } catch (err) {
       addPopUp({
         icon: 'Error',
@@ -101,16 +123,6 @@ function Profile(): JSX.Element {
             {errors.email && <p>{errors.email.message}</p>}
 
             <Input
-              className={errors.password ? 'borderError' : ''}
-              register={register}
-              icon="Password"
-              name="password"
-              type="password"
-              placeholder="new password"
-            />
-            {errors.password && <p>{errors.password.message}</p>}
-
-            <Input
               className={errors.old_password ? 'borderError' : ''}
               register={register}
               icon="Password"
@@ -119,6 +131,16 @@ function Profile(): JSX.Element {
               placeholder="old password"
             />
             {errors.old_password && <p>{errors.old_password.message}</p>}
+
+            <Input
+              className={errors.password ? 'borderError' : ''}
+              register={register}
+              icon="Password"
+              name="password"
+              type="password"
+              placeholder="new password"
+            />
+            {errors.password && <p>{errors.password.message}</p>}
 
             <Input
               className={errors.confirmation_password ? 'borderError' : ''}
