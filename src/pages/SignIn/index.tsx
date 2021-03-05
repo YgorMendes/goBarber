@@ -63,6 +63,8 @@ function SignIn(): JSX.Element {
               placeholder="email"
               register={register}
             />
+            {errors.email && <p>{errors.email.message}</p>}
+
             <Input
               className={errors.password ? 'borderError' : ''}
               icon="Password"
@@ -71,6 +73,8 @@ function SignIn(): JSX.Element {
               placeholder="password"
               register={register}
             />
+            {errors.password && <p>{errors.password.message}</p>}
+
             <Button type="submit">login</Button>
             <a href="forgot">you have forgotten the password?</a>
           </form>

@@ -26,7 +26,7 @@ interface UserData {
 
 function Profile(): JSX.Element {
   const { user, updateUser } = useAuth();
-  const { handleSubmit, register, errors } = useForm<UserData>({
+  const { register, errors, handleSubmit } = useForm<UserData>({
     resolver: yupResolver(schema),
   });
   const { addPopUp } = usePopUp();
