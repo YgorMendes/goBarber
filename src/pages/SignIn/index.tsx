@@ -37,7 +37,7 @@ function SignIn(): JSX.Element {
         addPopUp({ icon: 'Succes', title: 'Succes', description: 'Has Login' });
         history.push('/');
       } catch (err) {
-        console.log(err);
+        console.log('err');
         addPopUp({
           icon: 'Error',
           title: `Error`,
