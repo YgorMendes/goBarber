@@ -32,9 +32,14 @@ function InputComponent({
   }, []);
 
   return (
-    <Container isFilled={isFilled} isFocused={isFocused} className={className}>
+    <Container
+      isFilled={isFilled}
+      isFocused={isFocused}
+      className={className}
+      data-testid="input-container"
+    >
+      {' '}
       {icon && <Icon iconName={icon} />}
-
       <input
         {...rest}
         ref={(e) => {
