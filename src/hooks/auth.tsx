@@ -91,10 +91,6 @@ function AuthProvider({ children }: AuthContextProps): JSX.Element {
 function useAuth(): AuthContextData {
   const context = React.useContext(AuthContext);
 
-  if (!context) {
-    throw new Error('useAuthmustbe used within an AuthProvider');
-  }
-
   return context;
 }
 
